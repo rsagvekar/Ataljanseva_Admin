@@ -123,7 +123,7 @@ export default function DashboardScreen({navigation}) {
           color: '#ede9fe',
         },
         {icon: '📅', label: 'Events', value: stats.events, color: '#fce7f3'},
-        {icon: '📊', label: 'Surveys', value: stats.surveys, color: '#ecfdf5'},
+        // {icon: '📊', label: 'Surveys', value: stats.surveys, color: '#ecfdf5'},
         {icon: '🆘', label: 'Active SOS', value: stats.sos, color: '#fee2e2'},
       ]
     : [];
@@ -160,10 +160,10 @@ export default function DashboardScreen({navigation}) {
         {/* ── Stats Grid ────────────────────────────────────────────────────── */}
         {stats && (
           <>
-            <SectionHeader
+            {/* <SectionHeader
               title="Overview"
               subtitle="Live statistics from your portal"
-            />
+            /> */}
             <View
               style={[
                 styles.statsGrid,

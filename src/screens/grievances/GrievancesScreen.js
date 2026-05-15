@@ -391,6 +391,7 @@ export default function GrievancesScreen({navigation}) {
               data={filtered}
               keyExtractor={g => g.id}
               renderItem={renderItem}
+              scrollEnabled={false}
               numColumns={isTablet ? 2 : 1}
               key={isTablet ? 'tab' : 'phone'}
               columnWrapperStyle={isTablet ? {gap: SPACING.md} : undefined}
