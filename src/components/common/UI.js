@@ -24,7 +24,7 @@ export const StatCard = ({
   <TouchableOpacity
     style={[
       styles.statCard,
-      {backgroundColor: color || COLORS.infoLight},
+      {backgroundColor: color || COLORS.infoLight, marginRight: 12,},
       style,
     ]}
     onPress={onPress}
@@ -289,12 +289,12 @@ export const InfoRow = ({label, value, icon}) => (
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   statCard: {
-    minHeight: 120,
+    width: 100,
     borderRadius: RADIUS.xl,
     paddingVertical: SPACING.lg,
     paddingHorizontal: SPACING.md,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     ...SHADOWS.sm,
   },
   statIcon: {fontSize: 22, marginBottom: SPACING.xs},
