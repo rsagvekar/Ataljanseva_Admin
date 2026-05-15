@@ -1,8 +1,3 @@
-/**
- * AtalJanseva — Nagarsevak Admin App
- * React Native CLI (no Expo)
- */
-
 import React, { useEffect } from 'react';
 import { Platform, StatusBar, UIManager } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -35,7 +30,7 @@ export default function App() {
         <StatusBar
           barStyle="light-content"
           backgroundColor={COLORS.secondary}
-          translucent={Platform.OS === 'android'}
+          translucent={false}
         />
         <AuthProvider>
           <AppNavigator />

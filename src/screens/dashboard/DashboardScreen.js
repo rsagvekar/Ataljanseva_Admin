@@ -22,6 +22,7 @@ import {
 } from '../../components/common/UI';
 import {COLORS, TYPOGRAPHY, SPACING, RADIUS, SHADOWS} from '../../config/theme';
 import {formatDate, formatRelative} from '../../utils/formatters';
+import ScreenHeader from '../../components/common/ScreenHeader';
 
 export default function DashboardScreen({navigation}) {
   const {user, nagarsevakId} = useAuth();
@@ -135,188 +136,180 @@ export default function DashboardScreen({navigation}) {
     : 0;
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{padding, paddingBottom: 100}}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={COLORS.primary}
-        />
-      }>
-      {/* ── Welcome Header ────────────────────────────────────────────────── */}
-      <View style={[styles.welcomeCard, {marginBottom: SPACING.lg}]}>
-        <View style={styles.welcomeLeft}>
-          <Text style={styles.welcomeGreet}>Welcome back 👋</Text>
-          <Text style={styles.welcomeName} numberOfLines={1}>
-            {user?.name || user?.email?.split('@')[0] || 'Admin'}
-          </Text>
-          <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>
-              {role?.replace(/_/g, ' ').toUpperCase()}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.welcomeRight}>
-          <Text style={styles.welcomeDateLabel}>Today</Text>
-          <Text style={styles.welcomeDate}>{formatDate(new Date())}</Text>
-          {stats?.sos > 0 && (
-            <View style={styles.sosBadge}>
-              <Icon name="warning" size={12} color={COLORS.danger} />
-              <Text style={styles.sosText}>{stats.sos} Active SOS</Text>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {/* ── Stats Grid ────────────────────────────────────────────────────── */}
-      {stats && (
-        <>
-          <SectionHeader
-            title="Overview"
-            subtitle="Live statistics from your portal"
+    <>
+      <ScreenHeader
+        title={`Welcome ${user?.name || 'Admin'}`}
+        subtitle={formatDate(new Date())}
+        rightIcon="notifications-outline"
+      />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{
+          paddingHorizontal: padding,
+          paddingBottom: 100,
+          paddingTop: SPACING.lg,
+        }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={COLORS.primary}
           />
-          <View
-            style={[
-              styles.statsGrid,
-              {
-                marginBottom: SPACING.xl,
-              },
-            ]}>
-            {STAT_CARDS.map((s, i) => {
-              const isLastInRow = (i + 1) % cols === 0;
+        }>
+        {/* ── Stats Grid ────────────────────────────────────────────────────── */}
+        {stats && (
+          <>
+            <SectionHeader
+              title="Overview"
+              subtitle="Live statistics from your portal"
+            />
+            <View
+              style={[
+                styles.statsGrid,
+                {
+                  marginBottom: SPACING.xl,
+                },
+              ]}>
+              {STAT_CARDS.map((s, i) => {
+                const isLastInRow = (i + 1) % cols === 0;
 
-              return (
-                <StatCard
-                  key={i}
-                  icon={s.icon}
-                  label={s.label}
-                  value={s.value}
-                  color={s.color}
-                  change={s.change}
-                  style={{
-                    width: cardWidth,
-                    marginRight: isLastInRow ? 0 : GRID_MARGIN,
-                    marginBottom: GRID_MARGIN,
-                  }}
-                />
-              );
-            })}
-          </View>
-        </>
-      )}
-
-      {/* ── Two-column on tablet / single on phone ─────────────────────── */}
-      <View style={[styles.row, isTablet && {gap: SPACING.lg}]}>
-        {/* Recent Grievances */}
-        <Card style={[styles.sectionCard, isTablet && {flex: 1}]}>
-          <SectionHeader
-            title="📋 Recent Grievances"
-            subtitle={`${stats?.pending || 0} pending`}
-            action={() => navigation?.navigate?.('Grievances')}
-            actionLabel="View All →"
-          />
-          {recentGrievances.length === 0 ? (
-            <EmptyState icon="📋" title="No grievances yet" />
-          ) : (
-            recentGrievances.slice(0, 5).map(g => (
-              <View key={g.id} style={styles.listItem}>
-                <View style={styles.listItemLeft}>
-                  <Text style={styles.ticketId}>{g.ticketId || '—'}</Text>
-                  <Text style={styles.listItemName} numberOfLines={1}>
-                    {g.name}
-                  </Text>
-                  <Text style={styles.listItemSub} numberOfLines={1}>
-                    {g.category} · {formatRelative(g.createdAt)}
-                  </Text>
-                </View>
-                <StatusBadge status={g.status} />
-              </View>
-            ))
-          )}
-        </Card>
-
-        {/* Tablet right column */}
-        {isTablet && (
-          <View style={{flex: 1, gap: SPACING.lg}}>
-            {/* SOS Alerts */}
-            <Card style={styles.sectionCard}>
-              <SectionHeader title="🆘 SOS Alerts" />
-              {recentSOS.length === 0 ? (
-                <EmptyState icon="🆘" title="No active SOS" />
-              ) : (
-                recentSOS.slice(0, 3).map(s => (
-                  <View key={s.id} style={styles.sosItem}>
-                    <Text style={styles.sosEmoji}>
-                      {s.type === 'Medical'
-                        ? '🚑'
-                        : s.type === 'Fire'
-                        ? '🔥'
-                        : '🚗'}
-                    </Text>
-                    <View style={{flex: 1}}>
-                      <Text style={styles.sosItemTitle}>
-                        {s.type} Emergency
-                      </Text>
-                      <Text style={styles.sosItemSub} numberOfLines={1}>
-                        {s.location || s.name}
-                      </Text>
-                    </View>
-                    <StatusBadge status={s.status} />
-                  </View>
-                ))
-              )}
-            </Card>
-
-            {/* Voter Breakdown */}
-            {(isSuperAdmin || isAdmin) && stats && (
-              <Card style={styles.sectionCard}>
-                <SectionHeader title="🗳️ Voter Breakdown" />
-                <View style={styles.voterTagRow}>
-                  {['Supporter', 'Neutral', 'Opponent', 'Influencer'].map(t => (
-                    <View key={t} style={styles.voterTag}>
-                      <Text style={styles.voterTagText}>{t}</Text>
-                    </View>
-                  ))}
-                </View>
-                <View style={styles.progressRow}>
-                  <Text style={styles.progressLabel}>Supporters</Text>
-                  <Text style={styles.progressPct}>{supporterPct}%</Text>
-                </View>
-                <View style={styles.progressBar}>
-                  <View
-                    style={[styles.progressFill, {width: `${supporterPct}%`}]}
+                return (
+                  <StatCard
+                    key={i}
+                    icon={s.icon}
+                    label={s.label}
+                    value={s.value}
+                    color={s.color}
+                    change={s.change}
+                    style={{
+                      width: cardWidth,
+                      marginRight: isLastInRow ? 0 : GRID_MARGIN,
+                      marginBottom: GRID_MARGIN,
+                    }}
                   />
-                </View>
-              </Card>
-            )}
-          </View>
-        )}
-      </View>
-
-      {/* ── SOS section on phone ──────────────────────────────────────────── */}
-      {!isTablet && recentSOS.length > 0 && (
-        <Card style={[styles.sectionCard, {marginTop: SPACING.lg}]}>
-          <SectionHeader title="🆘 Recent SOS Alerts" />
-          {recentSOS.slice(0, 3).map(s => (
-            <View key={s.id} style={styles.sosItem}>
-              <Text style={styles.sosEmoji}>
-                {s.type === 'Medical' ? '🚑' : s.type === 'Fire' ? '🔥' : '🚗'}
-              </Text>
-              <View style={{flex: 1}}>
-                <Text style={styles.sosItemTitle}>{s.type} Emergency</Text>
-                <Text style={styles.sosItemSub} numberOfLines={1}>
-                  {s.location || s.name}
-                </Text>
-              </View>
-              <StatusBadge status={s.status} />
+                );
+              })}
             </View>
-          ))}
-        </Card>
-      )}
-    </ScrollView>
+          </>
+        )}
+
+        {/* ── Two-column on tablet / single on phone ─────────────────────── */}
+        <View style={[styles.row, isTablet && {gap: SPACING.lg}]}>
+          {/* Recent Grievances */}
+          <Card style={[styles.sectionCard, isTablet && {flex: 1}]}>
+            <SectionHeader
+              title="📋 Recent Grievances"
+              subtitle={`${stats?.pending || 0} pending`}
+              action={() => navigation?.navigate?.('Grievances')}
+              actionLabel="View All →"
+            />
+            {recentGrievances.length === 0 ? (
+              <EmptyState icon="📋" title="No grievances yet" />
+            ) : (
+              recentGrievances.slice(0, 5).map(g => (
+                <View key={g.id} style={styles.listItem}>
+                  <View style={styles.listItemLeft}>
+                    <Text style={styles.ticketId}>{g.ticketId || '—'}</Text>
+                    <Text style={styles.listItemName} numberOfLines={1}>
+                      {g.name}
+                    </Text>
+                    <Text style={styles.listItemSub} numberOfLines={1}>
+                      {g.category} · {formatRelative(g.createdAt)}
+                    </Text>
+                  </View>
+                  <StatusBadge status={g.status} />
+                </View>
+              ))
+            )}
+          </Card>
+
+          {/* Tablet right column */}
+          {isTablet && (
+            <View style={{flex: 1, gap: SPACING.lg}}>
+              {/* SOS Alerts */}
+              <Card style={styles.sectionCard}>
+                <SectionHeader title="🆘 SOS Alerts" />
+                {recentSOS.length === 0 ? (
+                  <EmptyState icon="🆘" title="No active SOS" />
+                ) : (
+                  recentSOS.slice(0, 3).map(s => (
+                    <View key={s.id} style={styles.sosItem}>
+                      <Text style={styles.sosEmoji}>
+                        {s.type === 'Medical'
+                          ? '🚑'
+                          : s.type === 'Fire'
+                          ? '🔥'
+                          : '🚗'}
+                      </Text>
+                      <View style={{flex: 1}}>
+                        <Text style={styles.sosItemTitle}>
+                          {s.type} Emergency
+                        </Text>
+                        <Text style={styles.sosItemSub} numberOfLines={1}>
+                          {s.location || s.name}
+                        </Text>
+                      </View>
+                      <StatusBadge status={s.status} />
+                    </View>
+                  ))
+                )}
+              </Card>
+
+              {/* Voter Breakdown */}
+              {(isSuperAdmin || isAdmin) && stats && (
+                <Card style={styles.sectionCard}>
+                  <SectionHeader title="🗳️ Voter Breakdown" />
+                  <View style={styles.voterTagRow}>
+                    {['Supporter', 'Neutral', 'Opponent', 'Influencer'].map(
+                      t => (
+                        <View key={t} style={styles.voterTag}>
+                          <Text style={styles.voterTagText}>{t}</Text>
+                        </View>
+                      ),
+                    )}
+                  </View>
+                  <View style={styles.progressRow}>
+                    <Text style={styles.progressLabel}>Supporters</Text>
+                    <Text style={styles.progressPct}>{supporterPct}%</Text>
+                  </View>
+                  <View style={styles.progressBar}>
+                    <View
+                      style={[styles.progressFill, {width: `${supporterPct}%`}]}
+                    />
+                  </View>
+                </Card>
+              )}
+            </View>
+          )}
+        </View>
+
+        {/* ── SOS section on phone ──────────────────────────────────────────── */}
+        {!isTablet && recentSOS.length > 0 && (
+          <Card style={[styles.sectionCard, {marginTop: SPACING.lg}]}>
+            <SectionHeader title="🆘 Recent SOS Alerts" />
+            {recentSOS.slice(0, 3).map(s => (
+              <View key={s.id} style={styles.sosItem}>
+                <Text style={styles.sosEmoji}>
+                  {s.type === 'Medical'
+                    ? '🚑'
+                    : s.type === 'Fire'
+                    ? '🔥'
+                    : '🚗'}
+                </Text>
+                <View style={{flex: 1}}>
+                  <Text style={styles.sosItemTitle}>{s.type} Emergency</Text>
+                  <Text style={styles.sosItemSub} numberOfLines={1}>
+                    {s.location || s.name}
+                  </Text>
+                </View>
+                <StatusBadge status={s.status} />
+              </View>
+            ))}
+          </Card>
+        )}
+      </ScrollView>
+    </>
   );
 }
 

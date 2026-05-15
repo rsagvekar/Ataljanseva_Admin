@@ -426,6 +426,7 @@ const styles = StyleSheet.create({
   primaryBtnText: {...TYPOGRAPHY.h5, color: COLORS.white},
 
   card: {
+    flex: 1,
     backgroundColor: COLORS.white,
     borderRadius: RADIUS.xl,
     padding: SPACING.md,
