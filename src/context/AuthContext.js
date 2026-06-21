@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 import authService from '../services/authService';
 import storage from '../utils/storage';
+import messaging from '@react-native-firebase/messaging';
 
 export const AuthContext = createContext(null);
 
@@ -66,15 +67,20 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password) => {
     setAuthError(null);
     try {
-      const res = await authService.login(email, password);
+      let fcmToken = null;
+      try {
+        fcmToken = await messaging().getToken();
+      } catch (err) {
+        console.warn('Could not get FCM token:', err.message);
+      }
+
+      const res = await authService.login(email, password, fcmToken);
       const apiUser = res?.user;
       const token = res?.token;
       console.log('API login response:', res);
       if (!apiUser) throw new Error('Login failed: no user returned from API.');
 
-      // Persist token first so subsequent calls are authenticated
       if (token) await storage.setToken(token);
-
       await storage.setUser(apiUser);
 
       if (apiUser.slug) {
