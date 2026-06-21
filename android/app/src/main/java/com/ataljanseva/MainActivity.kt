@@ -1,4 +1,4 @@
-package com.ataljanseva
+package com.ataljansevaadmin
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
