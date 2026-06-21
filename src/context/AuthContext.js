@@ -66,12 +66,9 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password) => {
     setAuthError(null);
     try {
-      // const res = await authService.login(email, password);
-      const res = {user: "user", token: "access_token"};
-
-      // authService.login should return { user, token } (adjust to your API shape)
-      const apiUser = res?.user ?? res;
-      const token   = res?.token ?? res?.access_token ?? null;
+      const res = await authService.login(email, password);
+      const apiUser = res?.user;
+      const token   = res?.token;
 
       if (!apiUser) throw new Error('Login failed: no user returned from API.');
 
@@ -80,10 +77,11 @@ export const AuthProvider = ({ children }) => {
 
       await storage.setUser(apiUser);
 
-      if (apiUser.nagarsevak_id) {
-        await storage.setNagarsevakId(apiUser.nagarsevak_id);
-        setNagarsevakId(apiUser.nagarsevak_id);
+      if (apiUser.slug) {
+        await storage.setNagarsevakId(apiUser.slug);
+        setNagarsevakId(apiUser.slug);
       }
+      console.log('login successful, user:', apiUser.slug);
 
       setUser(apiUser);
       return apiUser;
