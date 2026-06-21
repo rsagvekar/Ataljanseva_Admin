@@ -144,8 +144,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // ── Derived state ──────────────────────────────────────────────────────────
-  // const isAuthenticated = !!user;
-  const isAuthenticated = true;
+  // Derived authentication state from the stored `user`
+  const isAuthenticated = !!user;
 
   return (
     <AuthContext.Provider

@@ -2,7 +2,7 @@ import axios from 'axios';
 import storage from '../utils/storage';
 
 const api = axios.create({
-  baseURL: 'https://nagarsevak-api.vercel.app',
+  baseURL: 'https://api.ataljanseva.in',
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 });
