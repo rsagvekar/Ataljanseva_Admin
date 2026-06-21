@@ -148,6 +148,7 @@ export default function AdminTabNavigator() {
     return () => clearInterval(timer);
   }, [nagarsevakId]);
 
+  console.log('AdminTabNavigator: role=', role, 'nagarsevakId=', nagarsevakId, 'sosCount=', sosCount);
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomTabBar {...props} sosCount={sosCount} />}
@@ -155,7 +156,7 @@ export default function AdminTabNavigator() {
     >
       <Tab.Screen name="Dashboard"  component={DashboardStack}  options={{ title: 'Dashboard' }} />
       <Tab.Screen name="Grievances" component={GrievancesStack} options={{ title: 'Grievances' }} />
-      {!isVolunteer && <Tab.Screen name="Works"      component={WorksStack}      options={{ title: 'Jan Vikas' }} />}
+      {/* {!isVolunteer && <Tab.Screen name="Works"      component={WorksStack}      options={{ title: 'Jan Vikas' }} />} */}
       {!isVolunteer && <Tab.Screen name="Volunteers" component={VolunteersStack} options={{ title: 'Volunteers' }} />}
       {!isVolunteer && <Tab.Screen name="SOS"        component={SOSStack}        options={{ title: 'SOS' }} />}
       <Tab.Screen name="More" component={MoreStack} options={{ title: 'More' }} />

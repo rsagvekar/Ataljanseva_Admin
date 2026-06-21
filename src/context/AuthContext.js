@@ -16,10 +16,10 @@ import storage from '../utils/storage';
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user,         setUser]         = useState(null);   // REST API user (has role, nagarsevak_id)
+  const [user, setUser] = useState(null);   // REST API user (has role, nagarsevak_id)
   const [nagarsevakId, setNagarsevakId] = useState("ashokshelke");
-  const [loading,      setLoading]      = useState(true);
-  const [authError,    setAuthError]    = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   // ── Restore persisted session on cold start ────────────────────────────────
   useEffect(() => {
@@ -68,8 +68,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await authService.login(email, password);
       const apiUser = res?.user;
-      const token   = res?.token;
-
+      const token = res?.token;
+      console.log('API login response:', res);
       if (!apiUser) throw new Error('Login failed: no user returned from API.');
 
       // Persist token first so subsequent calls are authenticated

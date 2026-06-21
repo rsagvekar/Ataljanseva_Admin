@@ -3,7 +3,7 @@ import storage from '../utils/storage';
 
 const authService = {
   login: async (email, password) => {
-    const res = await api.post('/api/auth/login', { email, password });
+    const res = await api.post('/api/auth/admin-app/login', { email, password });
     const token = res?.data?.token || res?.token;
     const user  = res?.data?.user  || res?.user;
     if (token) await storage.setToken(token);
