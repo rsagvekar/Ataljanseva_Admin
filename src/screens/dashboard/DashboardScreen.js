@@ -8,10 +8,12 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useAuth} from '../../context/AuthContext';
 import {usePermissions} from '../../hooks/usePermissions';
 import dashboardService from '../../services/dashboardService';
+import notificationsService from '../../services/notificationsService';
 import {
   StatCard,
   LoadingSpinner,
@@ -51,6 +53,31 @@ export default function DashboardScreen({navigation}) {
   const [recentSOS, setRecentSOS] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // NEW — feeds the bell icon's badge. Polled the same way the tab bar
+  // already polls the SOS count (see AdminTabNavigator.js), so a
+  // notification created while the admin is sitting on this screen still
+  // shows up within a minute without needing a manual refresh.
+  const fetchUnread = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await notificationsService.getUnreadCount();
+      setUnreadCount(res?.total || 0);
+    } catch {}
+  }, [user]);
+
+  useEffect(() => {
+    fetchUnread();
+    const timer = setInterval(fetchUnread, 60_000);
+    return () => clearInterval(timer);
+  }, [fetchUnread]);
+
+  // Also refresh immediately on focus — covers coming back from the
+  // Notifications screen after reading some, without waiting for the poll.
+  useFocusEffect(
+    useCallback(() => { fetchUnread(); }, [fetchUnread])
+  );
 
   // ── Data load ──────────────────────────────────────────────────────────────
   const load = useCallback(
@@ -141,6 +168,8 @@ export default function DashboardScreen({navigation}) {
         title={`Welcome ${user?.name || 'Admin'}`}
         subtitle={formatDate(new Date())}
         rightIcon="notifications-outline"
+        onRightPress={() => navigation.navigate('Notifications')}
+        badgeCount={unreadCount}
       />
       <ScrollView
         style={styles.container}

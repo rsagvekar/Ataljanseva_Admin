@@ -92,6 +92,7 @@ export const AuthProvider = ({ children }) => {
       setUser(apiUser);
       return apiUser;
     } catch (err) {
+      console.log('login error:', err);
       const msg = _friendlyError(err);
       setAuthError(msg);
       throw new Error(msg);

@@ -28,6 +28,7 @@ import BirthdaysScreen     from '../screens/birthdays/BirthdaysScreen';
 import UserManagementScreen from '../screens/users/UserManagementScreen';
 import SettingsScreen      from '../screens/settings/SettingsScreen';
 import MoreScreen          from '../screens/more/MoreScreen';
+import NotificationsScreen from '../screens/notifications/NotificationsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -86,12 +87,13 @@ function CustomTabBar({ state, descriptors, navigation, sosCount }) {
         const label       = options.tabBarLabel ?? options.title ?? route.name;
 
         const iconName = {
-          Dashboard:  focused ? 'grid'          : 'grid-outline',
-          Grievances: focused ? 'document-text' : 'document-text-outline',
-          Works:      focused ? 'construct'     : 'construct-outline',
-          Volunteers: focused ? 'people'        : 'people-outline',
-          SOS:        focused ? 'warning'       : 'warning-outline',
-          More:       focused ? 'menu'          : 'menu-outline',
+          Dashboard:    focused ? 'grid'              : 'grid-outline',
+          Grievances:   focused ? 'document-text'     : 'document-text-outline',
+          Works:        focused ? 'construct'         : 'construct-outline',
+          Volunteers:   focused ? 'people'            : 'people-outline',
+          SOS:          focused ? 'warning'           : 'warning-outline',
+          More:         focused ? 'menu'              : 'menu-outline',
+          Notifications: focused ? 'notifications'    : 'notifications-outline',
         }[route.name] || 'ellipse-outline';
 
         const iconColor = route.name === 'SOS'
@@ -160,6 +162,7 @@ export default function AdminTabNavigator() {
       {!isVolunteer && <Tab.Screen name="Volunteers" component={VolunteersStack} options={{ title: 'Volunteers' }} />}
       {!isVolunteer && <Tab.Screen name="SOS"        component={SOSStack}        options={{ title: 'SOS' }} />}
       <Tab.Screen name="More" component={MoreStack} options={{ title: 'More' }} />
+      <Tab.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
     </Tab.Navigator>
   );
 }
